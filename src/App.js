@@ -1,8 +1,12 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { useSelector } from 'react-redux';
 
-const App = () => {
-  return <SafeAreaView />;
-};
+import createRouter from './routes';
 
-export default App;
+// import { Container } from './styles';
+
+export default function App() {
+  const signed = useSelector(state => state.auth.signed);
+  const Routes = createRouter(signed);
+  return <Routes />;
+}
