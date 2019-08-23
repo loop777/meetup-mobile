@@ -84,7 +84,7 @@ export default function Dashboard() {
 
         <FlatList
           data={meetups}
-          keyExtractor={meetup => String(meetup)}
+          keyExtractor={meetup => String(meetup.id)}
           renderItem={({ item: meetup }) => (
             <Meetup
               data={meetup}
