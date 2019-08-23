@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
+import * as Yup from 'yup';
+import { Alert } from 'react-native';
 
 import Background from '~/components/Background';
 
@@ -16,6 +18,18 @@ import {
   SubmitButton,
   LogoutButton,
 } from './styles';
+
+const schema = Yup.object().shape({
+  name: Yup.string(),
+  email: Yup.string().email(),
+  oldPassword: Yup.string(),
+  password: Yup.string().when('oldPassword', (oldPassword, field) =>
+    oldPassword ? field.min(6).required() : field
+  ),
+  repeatPassword: Yup.string().when('password', (password, field) =>
+    password ? field.required().oneOf([Yup.ref('password')]) : field
+  ),
+});
 
 export default function Profile() {
   const profile = useSelector(state => state.user.profile);
@@ -39,16 +53,21 @@ export default function Profile() {
     setRepeatPassword('');
   }, [profile]);
 
-  function handleSubmit() {
-    dispatch(
-      updateProfileRequest({
-        name,
-        email,
-        oldPassword,
-        password,
-        repeatPassword,
-      })
-    );
+  async function handleSubmit() {
+    const data = {
+      name,
+      email,
+      oldPassword,
+      password,
+      repeatPassword,
+    };
+
+    if (!(await schema.isValid(data))) {
+      Alert.alert('Erro!', 'Confira seus dados!');
+      return;
+    }
+
+    dispatch(updateProfileRequest(data));
   }
 
   function handleLogout() {

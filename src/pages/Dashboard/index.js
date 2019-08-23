@@ -61,6 +61,7 @@ export default function Dashboard() {
   async function handleSubscription(id) {
     try {
       await api.post(`subscribe/${id}`);
+      Alert.alert('Sucesso!', 'Inscrição realizada');
     } catch (err) {
       Alert.alert(
         'Falha na inscrição',
